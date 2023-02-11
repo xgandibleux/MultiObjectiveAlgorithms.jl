@@ -1,0 +1,46 @@
+# Bi-objective linear problem (bilp)
+#
+# Example 6.3 (from Steuer, 1985), page 154 of
+# Multicriteria Optimization (2nd edt), M. Ehrgott, Springer 2005.
+#
+# Adapted from vOptGeneric
+
+
+# ---- Packages to use
+using JuMP
+import GLPK
+import MultiObjectiveAlgorithms as MOA
+
+
+# ---- setting the model + values
+bilp = Model()
+@variable( bilp, x1 >= 0 )
+@variable( bilp, x2 >= 0 )
+@expression(bilp, objective1,  3*x1 + x2)
+@expression(bilp, objective2, -x1 - 2*x2)
+@objective(bilp, Min, [objective1, objective2])
+@constraint( bilp, cst1, x2 <= 3 )
+@constraint( bilp, cst2, 3*x1 - x2 <= 6 )
+
+
+# ---- Invoking the solver (lexicographic method)
+set_optimizer(bilp, () -> MOA.Optimizer(GLPK.Optimizer))
+set_optimizer_attribute(bilp, MOA.Algorithm(), MOA.Lexicographic(all_permutations = true))
+optimize!(bilp)
+
+
+# ---- Querying the results
+solution_summary(bilp)
+sizeLex = result_count(bilp)
+for i in 1:sizeLex
+    print(i,": ")
+    print("z=[", convert(Int64,value(objective1; result = i))," , ", convert(Int64,value(objective2; result = i)),"] | ")
+    print("x=[", value(x1; result = i), " , ", value(x2; result = i),  "]\n")
+end
+
+
+#=
+Results:
+1: z=[0 , 0] | x=[0.0 , 0.0]
+2: z=[12 , -9] | x=[3.0 , 3.0]
+=#
