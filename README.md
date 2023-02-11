@@ -7,15 +7,15 @@ multi-objective optimization.
 
 ## Installation
 
-This package is currently under development. You can install it as follows:
+Install MOA using `Pkg.add`:
 
 ```julia
-] add MathOptInterface#master
-] add JuMP#od/vector-optimization
-] add https://github.com/odow/MultiObjectiveAlgorithms.jl
+] add MultiObjectiveAlgorithms
 ```
 
 ## Usage with JuMP
+
+**Compat: this requires at least JuMP v1.8.0**
 
 Use `MultiObjectiveAlgorithms` with JuMP as follows:
 
@@ -30,8 +30,6 @@ set_optimizer_attribute(model, MOA.SolutionLimit(), 4)
 
 Replace `HiGHS.Optimizer` with an optimizer capable of solving a
 single-objective instance of your optimization problem.
-
-You must set the `MOA.Algorithm` attribute to choose the solution algorithm.
 
 You may set additional optimizer attributes, the supported attributes depend on
 the choice of solution algorithm.
