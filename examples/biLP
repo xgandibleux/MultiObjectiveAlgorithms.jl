@@ -1,4 +1,4 @@
-# Bi-objective linear problem (bilp)
+# Bi-objective linear problem (model)
 #
 # Example 6.3 (from Steuer, 1985), page 154 of
 # Multicriteria Optimization (2nd edt), M. Ehrgott, Springer 2005.
@@ -13,25 +13,25 @@ import MultiObjectiveAlgorithms as MOA
 
 
 # ---- setting the model + values
-bilp = Model()
-@variable( bilp, x1 >= 0 )
-@variable( bilp, x2 >= 0 )
-@expression(bilp, objective1,  3*x1 + x2)
-@expression(bilp, objective2, -x1 - 2*x2)
-@objective(bilp, Min, [objective1, objective2])
-@constraint( bilp, cst1, x2 <= 3 )
-@constraint( bilp, cst2, 3*x1 - x2 <= 6 )
+model = Model()
+@variable( model, x1 >= 0 )
+@variable( model, x2 >= 0 )
+@expression(model, objective1,  3*x1 + x2)
+@expression(model, objective2, -x1 - 2*x2)
+@objective(model, Min, [objective1, objective2])
+@constraint( model, cst1, x2 <= 3 )
+@constraint( model, cst2, 3*x1 - x2 <= 6 )
 
 
 # ---- Invoking the solver (lexicographic method)
-set_optimizer(bilp, () -> MOA.Optimizer(GLPK.Optimizer))
-set_optimizer_attribute(bilp, MOA.Algorithm(), MOA.Lexicographic(all_permutations = true))
-optimize!(bilp)
+set_optimizer(model, () -> MOA.Optimizer(GLPK.Optimizer))
+set_optimizer_attribute(model, MOA.Algorithm(), MOA.Lexicographic(all_permutations = true))
+optimize!(model)
 
 
 # ---- Querying the results
-solution_summary(bilp)
-sizeLex = result_count(bilp)
+solution_summary(model)
+sizeLex = result_count(model)
 for i in 1:sizeLex
     print(i,": ")
     print("z=[", convert(Int64,value(objective1; result = i))," , ", convert(Int64,value(objective2; result = i)),"] | ")

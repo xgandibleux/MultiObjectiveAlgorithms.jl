@@ -1,4 +1,4 @@
-# Bi-objective shortest path problem (bisp)
+# Bi-objective shortest path problem (model)
 #
 # Exercise 9.5 page 269 of
 # Multicriteria Optimization (2nd edt), M. Ehrgott, Springer 2005.
@@ -30,26 +30,26 @@ n  = size(C2,1)       # number of nodes
 
 
 # ---- setting the model
-bisp = Model()
-@variable(bisp, x[1:n,1:n], Bin )
-@expression(bisp, objective1, sum(x[i,j]*C1[i,j] for i=1:n, j=1:n))
-@expression(bisp, objective2, sum(x[i,j]*C2[i,j] for i=1:n, j=1:n) )
-@objective(bisp, Min, [objective1, objective2])
-@constraint(bisp, node_s, sum(x[1,j] for j = 1:n) == 1 )
-@constraint(bisp, node_t, sum(x[i,n] for i = 1:n) == 1 )
-@constraint(bisp, cstr[i=2:n-1], sum(x[i,j] for j = 1:n) - sum(x[j,i] for j =1:n) == 0 )
+model = Model()
+@variable(model, x[1:n,1:n], Bin )
+@expression(model, objective1, sum(x[i,j]*C1[i,j] for i=1:n, j=1:n))
+@expression(model, objective2, sum(x[i,j]*C2[i,j] for i=1:n, j=1:n) )
+@objective(model, Min, [objective1, objective2])
+@constraint(model, node_s, sum(x[1,j] for j = 1:n) == 1 )
+@constraint(model, node_t, sum(x[i,n] for i = 1:n) == 1 )
+@constraint(model, cstr[i=2:n-1], sum(x[i,j] for j = 1:n) - sum(x[j,i] for j =1:n) == 0 )
 
 
 # ---- Invoking the algorithm (Epsilon Constraint method) and the IP solver (GLPK) 
-set_optimizer(bisp, () -> MOA.Optimizer(GLPK.Optimizer))
-set_optimizer_attribute(bisp, MOA.Algorithm(), MOA.EpsilonConstraint())
-set_optimizer_attribute(bisp, MOA.ObjectiveAbsoluteTolerance(1), 1) # ugly name for this attribute
-optimize!(bisp)
+set_optimizer(model, () -> MOA.Optimizer(GLPK.Optimizer))
+set_optimizer_attribute(model, MOA.Algorithm(), MOA.EpsilonConstraint())
+set_optimizer_attribute(model, MOA.ObjectiveAbsoluteTolerance(1), 1) # ugly name for this attribute
+optimize!(model)
 
 
 # ---- Querying the results
-solution_summary(bisp)
-sizeYN = result_count(bisp)
+solution_summary(model)
+sizeYN = result_count(model)
 for i in 1:sizeYN
     print(i,": ")
     print("z=[", convert(Int64,value(objective1; result = i))," , ", convert(Int64,value(objective2; result = i)),"] | ")

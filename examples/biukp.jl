@@ -1,4 +1,4 @@
-# Bi-objective unidimensionnal 01 knapsack problem (biukp)
+# Bi-objective unidimensionnal 01 knapsack problem (model)
 #
 # Adapted from vOptGeneric
 
@@ -18,24 +18,24 @@ n = length(p1)
 
 
 # ---- setting the model
-biukp = Model()
-@variable(biukp, x[1:n], Bin)
-@expression(biukp, objective1, sum( p1[j]*x[j] for j=1:n ))
-@expression(biukp, objective2, sum( p2[j]*x[j] for j=1:n ))
-@objective(biukp, Max, [objective1, objective2])
-@constraint(biukp, sum( w[j]*x[j] for j=1:n ) <= c )
+model = Model()
+@variable(model, x[1:n], Bin)
+@expression(model, objective1, sum( p1[j]*x[j] for j=1:n ))
+@expression(model, objective2, sum( p2[j]*x[j] for j=1:n ))
+@objective(model, Max, [objective1, objective2])
+@constraint(model, sum( w[j]*x[j] for j=1:n ) <= c )
 
 
 # ---- Invoking the algorithm (Epsilon Constraint method) and the IP solver (GLPK) 
-set_optimizer(biukp, () -> MOA.Optimizer(GLPK.Optimizer))
-set_optimizer_attribute(biukp, MOA.Algorithm(), MOA.EpsilonConstraint())
-set_optimizer_attribute(biukp, MOA.ObjectiveAbsoluteTolerance(1), 1) # ugly name for this attribute
-optimize!(biukp)
+set_optimizer(model, () -> MOA.Optimizer(GLPK.Optimizer))
+set_optimizer_attribute(model, MOA.Algorithm(), MOA.EpsilonConstraint())
+set_optimizer_attribute(model, MOA.ObjectiveAbsoluteTolerance(1), 1) # ugly name for this attribute
+optimize!(model)
 
 
 # ---- Querying the results
-solution_summary(biukp)
-sizeYN = result_count(biukp)
+solution_summary(model)
+sizeYN = result_count(model)
 for i in 1:sizeYN
     print(i,": ")
     print("z=[", convert(Int64,value(objective1; result = i))," , ", convert(Int64,value(objective2; result = i)),"] | ")

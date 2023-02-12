@@ -1,4 +1,4 @@
-# Bi-objective linear assignment problem (bilap)
+# Bi-objective linear assignment problem (model)
 #
 # Example 9.38 (from Ulungu and Teghem, 1994), page 255 of
 # Multicriteria Optimization (2nd edt), M. Ehrgott, Springer 2005.
@@ -27,25 +27,25 @@ n  = size(C2,1)       # number of lines/columns
 
 
 # ---- setting the model
-bilap = Model()
-@variable(bilap, x[1:n,1:n], Bin )
-@expression(bilap, objective1, sum( C1[i,j]*x[i,j] for i=1:n,j=1:n ))
-@expression(bilap, objective2, sum( C2[i,j]*x[i,j] for i=1:n,j=1:n ))
-@objective(bilap, Min, [objective1, objective2])
-@constraint(bilap , cols[i=1:n], sum(x[i,j] for j=1:n) == 1 )
-@constraint(bilap , rows[j=1:n], sum(x[i,j] for i=1:n) == 1 )
+model = Model()
+@variable(model, x[1:n,1:n], Bin )
+@expression(model, objective1, sum( C1[i,j]*x[i,j] for i=1:n,j=1:n ))
+@expression(model, objective2, sum( C2[i,j]*x[i,j] for i=1:n,j=1:n ))
+@objective(model, Min, [objective1, objective2])
+@constraint(model , cols[i=1:n], sum(x[i,j] for j=1:n) == 1 )
+@constraint(model , rows[j=1:n], sum(x[i,j] for i=1:n) == 1 )
 
 
 # ---- Invoking the algorithm (Epsilon Constraint method) and the IP solver (GLPK) 
-set_optimizer(bilap, () -> MOA.Optimizer(GLPK.Optimizer))
-set_optimizer_attribute(bilap, MOA.Algorithm(), MOA.EpsilonConstraint())
-set_optimizer_attribute(bilap, MOA.ObjectiveAbsoluteTolerance(1), 1) # ugly name for this attribute
-optimize!(bilap)
+set_optimizer(model, () -> MOA.Optimizer(GLPK.Optimizer))
+set_optimizer_attribute(model, MOA.Algorithm(), MOA.EpsilonConstraint())
+set_optimizer_attribute(model, MOA.ObjectiveAbsoluteTolerance(1), 1) # ugly name for this attribute
+optimize!(model)
 
 
 # ---- Querying the results
-solution_summary(bilap)
-sizeYN = result_count(bilap)
+solution_summary(model)
+sizeYN = result_count(model)
 for i in 1:sizeYN
     print(i,": ")
     print("z=[", convert(Int64,value(objective1; result = i))," , ", convert(Int64,value(objective2; result = i)),"] | ")
