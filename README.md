@@ -21,8 +21,8 @@ Use `MultiObjectiveAlgorithms` with JuMP as follows:
 
 ```julia
 using JuMP
-import HiGHS, MultiObjectiveAlgorithms
-const MOA = MultiObjectiveAlgorithms
+import HiGHS
+import MultiObjectiveAlgorithms as MOA
 model = JuMP.Model(() -> MOA.Optimizer(HiGHS.Optimizer))
 set_optimizer_attribute(model, MOA.Algorithm(), MOA.NISE())
 set_optimizer_attribute(model, MOA.SolutionLimit(), 4)
@@ -40,6 +40,7 @@ There are a number of algorithms supported by the algorithms in MOA.
 
  * `MOA.EpsilonConstraint()`
  * `MOA.Hierarchical()`
+ * `MOA.KirlikSayin()`
  * `MOA.Lexicographic()` [default]
  * `MOA.NISE()`
 
